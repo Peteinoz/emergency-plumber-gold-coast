@@ -53,7 +53,6 @@ EMAIL = "admin@moyleplumbing.com.au"
 QBCC = "1077154"
 ABN = "77 105 255 534"
 LOGO = "images/moyle-plumbing-gasfitting-logo.png"
-FOOTER_LOGO = "images/moyle-plumbing-gasfitting-logo-footer.png"
 DEFAULT_OG = "images/og/moyle-plumbing-gold-coast.jpg"
 FAVICON = "images/favicon.ico"
 MAP_EMBED = "https://www.google.com/maps?q=8+Belair+Drive+Yatala+QLD+4207&output=embed"
@@ -112,6 +111,12 @@ FOOTER_COMPANY = [
 
 PHONE_SVG = ('<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg>')
 MENU_SVG = ('<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>')
+WORDMARK_SVG = (
+    '<svg class="wordmark" viewBox="0 0 300 64" role="img" aria-label="Moyle Plumbing &amp; Gasfitting">'
+    '<path fill="#009be4" d="M24 4 8 30a17 17 0 1 0 32 0z"/>'
+    '<text x="52" y="30" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-weight="800" font-size="27" fill="currentColor">Moyle Plumbing</text>'
+    '<text x="53" y="54" font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-weight="700" font-size="16" letter-spacing="2" fill="#009be4">&amp; GASFITTING</text>'
+    '</svg>')
 PLAY_SVG = ('<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-2 14.5v-9l7 4.5z"/></svg>')
 
 
@@ -135,7 +140,7 @@ def header(rel):
     return f'''<a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="logo" href="{rel}" aria-label="{esc(NAME)} home"><img src="{rel}{LOGO}" alt="{esc(NAME)} logo" width="180" height="{{LOGO_H}}"></a>
+    <a class="logo" href="{rel}" aria-label="{esc(NAME)} home">{WORDMARK_SVG}</a>
     <button class="nav-btn" type="button" aria-expanded="false" aria-controls="site-nav">{MENU_SVG} Menu</button>
     <a class="btn btn-primary header-call" href="tel:{PHONE_TEL}">{PHONE_SVG}{PHONE_DISPLAY}</a>
     <nav id="site-nav" class="site-nav" aria-label="Main">
@@ -160,7 +165,7 @@ def footer(rel):
     return f'''<footer class="site-footer">
   <div class="wrap footer-grid">
     <div>
-      <img class="footer-logo" src="{rel}{FOOTER_LOGO}" alt="{esc(NAME)}" width="160" height="{{FOOTER_LOGO_H}}" loading="lazy">
+      <div class="footer-logo">{WORDMARK_SVG}</div>
       <address>{esc(NAME)}<br>{STREET}, {LOCALITY} {REGION} {POSTCODE}<br><a href="tel:{PHONE_TEL}">{PHONE_DISPLAY}</a></address>
       <p>Email: <a href="mailto:{EMAIL}">{EMAIL}</a><br>QBCC licence {QBCC}<br>ABN {ABN}</p>
     </div>
@@ -192,12 +197,26 @@ def breadcrumbs(rel, page):
     return f'<nav class="breadcrumbs wrap" aria-label="Breadcrumb"><ol>{"".join(items)}</ol></nav>\n'
 
 
+DEFAULT_CHIPS = {
+    "home": ["Family owned and run since 1983", "Based at Yatala, northern Gold Coast", "Licensed and insured plumbers and gasfitters", "Price agreed before work starts"],
+    "service": ["Licensed and insured", "Upfront set pricing", "Work area left clean", "Family business since 1983"],
+    "suburb": ["Yatala-based, local to you", "Same-day aim for genuine emergencies", "QBCC licence 1077154", "Price known before work starts"],
+    "hub": ["Domestic, commercial and real estate work", "Licensed plumbers and gasfitters", "Serving the northern Gold Coast, Logan and Brisbane southside"],
+    "post": ["Written by a licensed plumbing trade", "Practical steps, no sales pitch", "Call if it cannot wait"],
+    "core": ["Family owned and operated", "Trading since 1983", "Licensed and insured", "QBCC licence 1077154"],
+}
+
+
 def hero(rel, page):
     img = ""
     h = page.get("hero")
     if h:
         img = (f'<img src="{rel}{h["src"]}" alt="{esc(h["alt"])}" width="{h["w"]}" height="{h["h"]}" '
                f'fetchpriority="high" decoding="async">')
+    else:
+        chips = page.get("chips") or DEFAULT_CHIPS.get(page.get("kind", "core"), DEFAULT_CHIPS["core"])
+        items = "".join(f"<li>{esc(c)}</li>" for c in chips)
+        img = f'<div class="hero-panel" aria-label="Key facts"><ul class="checks">{items}</ul></div>'
     eyebrow = f'<span class="eyebrow">{esc(page["eyebrow"])}</span>' if page.get("eyebrow") else ""
     intro = page["intro"].replace("{rel}", rel)
     return f'''<section class="hero">
@@ -217,14 +236,14 @@ def hero(rel, page):
 '''
 
 
-def faqs_html(page):
+def faqs_html(page, rel):
     faqs = page.get("faqs") or []
     if not faqs:
         return ""
     items = "".join(
-        f'<details><summary>{esc(q)}</summary><div class="answer">{a}</div></details>' for q, a in faqs
+        f'<details><summary>{esc(q)}</summary><div class="answer">{a.replace("{rel}", rel)}</div></details>' for q, a in faqs
     )
-    return f'<section class="section faqs wrap"><h2>{esc(page.get("faq_heading", "Frequently asked questions"))}</h2>{items}</section>\n'
+    return f'<section class="section faqs wrap"><h2 class="faq-heading">{esc(page.get("faq_heading", "Frequently asked questions"))}</h2>{items}</section>\n'
 
 
 def related_html(rel, page):
@@ -349,9 +368,6 @@ def render(page, rel=None, base_tag=False):
     body = page["body"].replace("{rel}", rel)
     if "{map}" in body:
         body = body.replace("{map}", map_html())
-    if "{video}" in body:
-        v = page["video"]
-        body = body.replace("{video}", video_facade(rel, v["id"], v["thumb"], v["title"]))
     ld = json_ld(page)
     return f'''<!DOCTYPE html>
 <html lang="en-AU">
@@ -369,7 +385,9 @@ def render(page, rel=None, base_tag=False):
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0c1836">
 <link rel="icon" href="{rel}{FAVICON}" sizes="any">
+<link rel="apple-touch-icon" href="{rel}images/apple-touch-icon.png">
 <link rel="stylesheet" href="{rel}css/style.css">
+<script>document.documentElement.classList.add('js')</script>
 <script src="{rel}js/main.js" defer></script>
 <script type="application/ld+json">
 {ld}
@@ -378,7 +396,7 @@ def render(page, rel=None, base_tag=False):
 <body>
 {header(rel)}<main id="main">
 {breadcrumbs(rel, page)}{hero(rel, page)}{body}
-{faqs_html(page)}{related_html(rel, page)}</main>
+{faqs_html(page, rel)}{related_html(rel, page)}</main>
 {footer(rel)}</body>
 </html>
 '''
@@ -386,6 +404,8 @@ def render(page, rel=None, base_tag=False):
 
 def load_pages():
     pages = []
+    if str(CONTENT) not in sys.path:
+        sys.path.insert(0, str(CONTENT))
     for f in sorted(CONTENT.glob("*.py")):
         if f.name.startswith("_"):
             continue
@@ -419,15 +439,13 @@ def image_size(path):
 
 def main():
     pages = load_pages()
-    logo_h = round(180 * image_size(LOGO)[1] / image_size(LOGO)[0])
-    footer_h = round(160 * image_size(FOOTER_LOGO)[1] / image_size(FOOTER_LOGO)[0])
     slugs = set()
     for p in pages:
         assert p["slug"] not in slugs, f"duplicate slug {p['slug']}"
         slugs.add(p["slug"])
         out = ROOT / "index.html" if p["slug"] == "" else ROOT / p["slug"] / "index.html"
         out.parent.mkdir(parents=True, exist_ok=True)
-        html_text = render(p).replace("{LOGO_H}", str(logo_h)).replace("{FOOTER_LOGO_H}", str(footer_h))
+        html_text = render(p)
         out.write_text(html_text, encoding="utf-8")
     # 404: served at any depth, so it uses a <base> tag and noindex.
     nf = {
@@ -440,7 +458,7 @@ def main():
         "body": "<section class=\"section wrap prose\"><h2>Popular pages</h2><ul class=\"link-grid\">" + nav_list("{rel}", NAV_SERVICES + [(s, t) for s, t in NAV_AREAS if s != "suburbs-serviced"] + [("suburbs-serviced", "All suburbs"), ("contact-us", "Contact us")]) + "</ul></section>",
         "noindex": True,
     }
-    nf_html = render(nf, rel="", base_tag=True).replace("{LOGO_H}", str(logo_h)).replace("{FOOTER_LOGO_H}", str(footer_h))
+    nf_html = render(nf, rel="", base_tag=True)
     (ROOT / "404.html").write_text(nf_html, encoding="utf-8")
     (ROOT / "sitemap.xml").write_text(sitemap(pages), encoding="utf-8")
     print(f"built {len(pages)} pages + 404.html + sitemap.xml")

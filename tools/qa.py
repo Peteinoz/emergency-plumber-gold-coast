@@ -65,7 +65,7 @@ class Doc(HTMLParser):
         a = dict(attrs)
         self.stack.append(tag)
         cls = a.get("class", "")
-        if self._skip_depth is None and any(c in cls.split() for c in ("cta-row", "breadcrumbs", "related", "call-bar")):
+        if self._skip_depth is None and any(c in cls.split() for c in ("cta-row", "breadcrumbs", "related", "call-bar", "hero-panel", "faq-heading")):
             self._skip_depth = len(self.stack)
         if tag == "a" and a.get("href"):
             ctx = "".join(self.text_all[-3:])[-200:]
@@ -152,7 +152,8 @@ def shingles(text, n=6):
 
 
 ALLOWED_SHINGLE_PARTS = ["moyle plumbing", "8 belair drive", "yatala qld 4207", "07 3807 7327", "1077154", "77 105 255 534",
-                         "plumbing gasfitting", "plumbing and gasfitting"]
+                         "plumbing gasfitting", "plumbing and gasfitting", "moyleplumbing com au",
+                         "northern gold coast", "gold coast beenleigh logan", "beenleigh logan and brisbane"]
 
 
 def main():
