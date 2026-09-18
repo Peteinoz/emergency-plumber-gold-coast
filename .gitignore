@@ -1,0 +1,5 @@
+# SOURCE page text and HTML are used only for the originality check and must never be committed.
+tools/source_text/
+tools/source_html/
+tools/source_images/
+__pycache__/
