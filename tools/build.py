@@ -374,6 +374,8 @@ def render(page, rel=None, base_tag=False):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-site-verification" content="zCM2Hs8gUAZDjbd2SdaIh0PQSo5cY-tW3ou9S0zFXtc">
+<meta name="msvalidate.01" content="B1D866BAAB10788C4CF54CD6B53EEB99">
 {base}<title>{esc(page["title"])}</title>
 <meta name="description" content="{esc(page["description"])}">
 {robots}{canon}<meta property="og:title" content="{esc(page["title"])}">

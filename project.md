@@ -119,8 +119,9 @@ is the deliverable; the tools folder is how it is produced.
 1. Merge `claude/eager-thompson-uemfso` into `main`.
 2. GitHub: Settings -> Pages -> Deploy from a branch -> `main`, folder `/ (root)`. `.nojekyll` is in place.
 3. Confirm https://peteinoz.github.io/emergency-plumber-gold-coast/ loads and a bad URL shows 404.html.
-4. Google Search Console: add a URL-prefix property for the base URL and verify it (HTML tag in the
-   head via `tools/build.py`, or an HTML file in the repo root).
+4. Google Search Console: the site verification meta tag is already in the head of every page
+   (set in `tools/build.py`), as is the Bing Webmaster Tools tag. Add a URL-prefix property for the
+   base URL and verify with the HTML tag method.
 5. Submit https://peteinoz.github.io/emergency-plumber-gold-coast/sitemap.xml in Search Console.
 6. Spot-check Plumber, FAQPage, BreadcrumbList and BlogPosting schema in the Rich Results test.
 7. When real photos and the logo are available, add them as described above and rebuild.
@@ -133,3 +134,5 @@ is the deliverable; the tools folder is how it is produced.
   inline SVG wordmark; video facade removed. Five rounds of copy rewrites to reach zero six-word
   overlap between pages; all meta descriptions trimmed to 155 characters; 32 short pages extended.
   Contrast and layout-shift fixes from Lighthouse. QA at zero failures.
+- 2026-09-18: Google Search Console and Bing verification meta tags added to the shared head in
+  `tools/build.py`; all pages and 404.html rebuilt.
